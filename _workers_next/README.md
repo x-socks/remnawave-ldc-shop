@@ -144,6 +144,7 @@
 | `NEXT_PUBLIC_APP_URL` | **Text** | 你的 Workers 域名 (如 `https://ldc-shop.xxx.workers.dev`) |
 
 > ⚠️ **重要**: `NEXT_PUBLIC_APP_URL` **必须**设置为 Text 类型，不能用 Secret，否则支付签名会失败！
+> ⚠️ **重要**: 若 GitHub 用户需要管理员权限，`ADMIN_USERS` 中**必须**填写 `gh_<github_login>`（例如 `gh_octocat`），不能只写原始 GitHub 用户名。
 
 **回调地址配置：**
 
@@ -213,7 +214,7 @@
 | `ADMIN_USERS` | 管理员用户名列表，支持 Linux DO 用户名和 GitHub `gh_<login>` 用户名，逗号分隔。例如: `zhangsan,gh_octocat` |
 | `NEXT_PUBLIC_APP_URL` | 部署后的完整 URL (用于回调，必须 Text) |
 
-> 使用 GitHub 登录时，系统用户名会自动加前缀 `gh_`；如需管理员权限，请在 `ADMIN_USERS` 中填写对应值（例如 `gh_octocat`）。
+> ⚠️ 使用 GitHub 登录时，系统用户名会自动加前缀 `gh_`；如需管理员权限，`ADMIN_USERS` 中**必须**填写这个带前缀的用户名（例如 `gh_octocat`），不能只写 `octocat`。
 
 ## 🔌 卡密自动补货 API 对接
 

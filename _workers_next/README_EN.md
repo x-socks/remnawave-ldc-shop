@@ -170,6 +170,8 @@ It must exactly match the protocol and domain of `NEXT_PUBLIC_APP_URL` (no extra
 *   **ADMIN_USERS**: Admin usernames, comma separated (supports Linux DO usernames and GitHub usernames in `gh_<login>` format, e.g., `chatgpt,gh_octocat`) (**Secret recommended**).
 *   **NEXT_PUBLIC_APP_URL**: Your full app URL (e.g., `https://store.chatgpt.org.uk`). **Must be Text, not Secret**.
 
+> Important: For a GitHub account to be recognized as admin, `ADMIN_USERS` must contain `gh_<github_login>` (for example `gh_octocat`). Using just `octocat` will not work.
+
 ## 🔌 Card Auto-Replenish API Integration
 
 You can configure Card API auto-replenish per product in the admin `Card Inventory` page.

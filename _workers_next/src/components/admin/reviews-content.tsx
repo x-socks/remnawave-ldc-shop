@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { ClientDate } from "@/components/client-date"
 import { deleteReview } from "@/actions/admin"
 import { toast } from "sonner"
+import { getDisplayUsername, getExternalProfileUrl } from "@/lib/user-profile-link"
 
 interface ReviewRow {
   id: number
@@ -97,12 +98,12 @@ export function AdminReviewsContent({ reviews }: { reviews: ReviewRow[] }) {
                 </TableCell>
                 <TableCell className="max-w-[240px]">
                   <a
-                    href={`https://linux.do/u/${r.username}`}
+                    href={getExternalProfileUrl(r.username, r.userId) || "#"}
                     target="_blank"
                     rel="noreferrer"
                     className="font-medium text-sm hover:underline text-primary"
                   >
-                    {r.username}
+                    {getDisplayUsername(r.username, r.userId)}
                   </a>
                   <div className="text-xs text-muted-foreground font-mono">{r.userId}</div>
                 </TableCell>

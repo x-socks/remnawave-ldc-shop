@@ -10,6 +10,7 @@ import { ClientDate } from "@/components/client-date"
 import { adminApproveRefund, adminRejectRefund } from "@/actions/refund-requests"
 import { RefundButton } from "@/components/admin/refund-button"
 import { toast } from "sonner"
+import { getDisplayUsername, getExternalProfileUrl } from "@/lib/user-profile-link"
 
 function statusVariant(status: string | null) {
   switch (status) {
@@ -99,8 +100,8 @@ export function AdminRefundsContent({ requests }: { requests: any[] }) {
                 <TableCell className="font-mono text-xs">{r.orderId}</TableCell>
                 <TableCell>
                   {r.username ? (
-                    <a href={`https://linux.do/u/${r.username}`} target="_blank" rel="noreferrer" className="font-medium text-sm hover:underline text-primary">
-                      {r.username}
+                    <a href={getExternalProfileUrl(r.username, r.userId) || "#"} target="_blank" rel="noreferrer" className="font-medium text-sm hover:underline text-primary">
+                      {getDisplayUsername(r.username, r.userId)}
                     </a>
                   ) : (
                     <span className="text-muted-foreground">-</span>

@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button"
 import { AdminOrderActions } from "@/components/admin/order-actions"
 import { deleteOrders } from "@/actions/admin-orders"
 import { toast } from "sonner"
+import { getDisplayUsername, getExternalProfileUrl } from "@/lib/user-profile-link"
 
 interface Order {
     orderId: string
+    userId: string | null
     username: string | null
     email: string | null
     productName: string
@@ -294,12 +296,12 @@ export function AdminOrdersContent({
                                     {order.username ? (
                                         <div className="space-y-0.5">
                                             <a
-                                                href={`https://linux.do/u/${order.username}`}
+                                                href={getExternalProfileUrl(order.username, order.userId) || "#"}
                                                 target="_blank"
                                                 rel="noreferrer"
                                                 className="font-medium text-sm hover:underline text-primary"
                                             >
-                                                {order.username}
+                                                {getDisplayUsername(order.username, order.userId)}
                                             </a>
                                             {order.email && (
                                                 <div className="text-xs text-muted-foreground">

@@ -66,6 +66,7 @@ export default async function AdminOrdersPage(props: {
         <AdminOrdersContent
             orders={rows.map((o: any) => ({
                 orderId: o.orderId,
+                userId: o.userId,
                 username: o.username,
                 email: o.email,
                 productName: o.productName,

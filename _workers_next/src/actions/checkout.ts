@@ -326,12 +326,13 @@ export async function createOrder(productId: string, quantity: number = 1, email
 
         const joinedKeys = reservedCards.map(c => c.key).join('\n')
 
-        await createOrderRecord(reservedCards, joinedKeys, isZeroPrice, pointsToUse, finalAmount, user, session?.user?.name, resolvedContactInfo, product, orderId, quantity)
+        await createOrderRecord(reservedCards, joinedKeys, isZeroPrice, pointsToUse, finalAmount, user, session?.user?.username, resolvedContactInfo, product, orderId, quantity)
     };
 
-    const createOrderRecord = async (reservedCards: any[], joinedKeys: string, isZeroPrice: boolean, pointsToUse: number, finalAmount: number, user: any, username: any, contactInfo: any, product: any, orderId: string, qty: number) => {
+    const createOrderRecord = async (reservedCards: any[], joinedKeys: string, isZeroPrice: boolean, pointsToUse: number, finalAmount: number, user: any, canonicalUsername: any, contactInfo: any, product: any, orderId: string, qty: number) => {
         let pointsDeducted = false
         let orderInserted = false
+        const normalizedUsername = canonicalUsername || user?.username || user?.name || null
 
         try {
             if (pointsToUse > 0) {
@@ -375,7 +376,7 @@ export async function createOrder(productId: string, quantity: number = 1, email
                     amount: finalAmount.toString(),
                     email: resolvedContactInfo,
                     userId: user?.id || null,
-                    username: username || user?.username || null,
+                    username: normalizedUsername,
                     status: 'delivered',
                     cardKey: joinedKeys,
                     cardIds: cardIdsValue,
@@ -420,7 +421,7 @@ export async function createOrder(productId: string, quantity: number = 1, email
                             orderId,
                             productName: product.name,
                             amount: pointsToUse.toString() + ' (积分)',
-                            username: username || user?.username,
+                            username: normalizedUsername,
                             email: contactInfo || user?.email,
                             tradeNo: 'POINTS_REDEMPTION'
                         });
@@ -449,7 +450,7 @@ export async function createOrder(productId: string, quantity: number = 1, email
                     amount: finalAmount.toString(),
                     email: resolvedContactInfo,
                     userId: user?.id || null,
-                    username: username || user?.username || null,
+                    username: normalizedUsername,
                     status: 'pending',
                     pointsUsed: pointsToUse,
                     currentPaymentId: orderId, // Store current payment ID

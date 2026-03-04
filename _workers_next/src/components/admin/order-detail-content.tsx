@@ -14,6 +14,7 @@ import { ClientDate } from "@/components/client-date"
 import { RefundButton } from "@/components/admin/refund-button"
 import { toast } from "sonner"
 import { markOrderDelivered, markOrderPaid, cancelOrder, updateOrderEmail, deleteOrder } from "@/actions/admin-orders"
+import { getDisplayUsername, getExternalProfileUrl } from "@/lib/user-profile-link"
 
 function statusVariant(status: string | null) {
   switch (status) {
@@ -153,12 +154,12 @@ export function AdminOrderDetailContent({ order }: { order: any }) {
               <div className="text-sm text-muted-foreground">{t('admin.orders.user')}</div>
               {order.username ? (
                 <a
-                  href={`https://linux.do/u/${order.username}`}
+                  href={getExternalProfileUrl(order.username, order.userId) || "#"}
                   target="_blank"
                   rel="noreferrer"
                   className="font-medium text-sm hover:underline text-primary"
                 >
-                  {order.username}
+                  {getDisplayUsername(order.username, order.userId)}
                 </a>
               ) : (
                 <div className="font-medium text-sm text-muted-foreground">Guest</div>

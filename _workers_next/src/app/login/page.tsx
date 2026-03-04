@@ -19,20 +19,20 @@ export default function LoginPage() {
         <CardContent className="space-y-3">
           <Button
             size="lg"
-            className="w-full bg-foreground text-background hover:bg-foreground/90"
-            onClick={() => signIn("linuxdo", { callbackUrl })}
-          >
-            <LogIn className="mr-2 h-4 w-4" />
-            使用 Linux DO 登录
-          </Button>
-          <Button
-            size="lg"
             variant="outline"
             className="w-full"
             onClick={() => signIn("github", { callbackUrl })}
           >
             <Github className="mr-2 h-4 w-4" />
             使用 GitHub 登录
+          </Button>
+          <Button
+            size="lg"
+            className="w-full bg-foreground text-background hover:bg-foreground/90"
+            onClick={() => signIn("linuxdo", { callbackUrl })}
+          >
+            <LogIn className="mr-2 h-4 w-4" />
+            使用 Linux DO 登录
           </Button>
         </CardContent>
       </Card>
