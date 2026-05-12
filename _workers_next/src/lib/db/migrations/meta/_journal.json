@@ -15,6 +15,13 @@
       "when": 1778563473396,
       "tag": "0001_add_product_type_remnawave_order_metadata",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1778565941494,
+      "tag": "0002_fearless_victor_mancha",
+      "breakpoints": true
     }
   ]
 }

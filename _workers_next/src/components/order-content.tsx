@@ -26,6 +26,8 @@ interface Order {
     amount: string
     status: string
     cardKey: string | null
+    subscriptionUrl?: string | null
+    expireAt?: Date | null
     payee?: string | null
     createdAt: Date | null
     paidAt: Date | null
@@ -225,7 +227,35 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
                     <Separator className="bg-border/50" />
 
                     {/* Content Display */}
-                    {order.status === 'delivered' && !isPayment ? (
+                    {order.subscriptionUrl ? (
+                        canViewKey ? (
+                            <div className="space-y-4">
+                                <h3 className="font-semibold flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                    Your subscription is ready
+                                </h3>
+                                <div className="relative group">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-accent/50 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-300" />
+                                    <div className="relative p-4 bg-slate-950 rounded-xl font-mono text-sm text-slate-100 break-all pr-14 border border-slate-800">
+                                        {order.subscriptionUrl}
+                                        <div className="absolute top-3 right-3">
+                                            <CopyButton text={order.subscriptionUrl} iconOnly />
+                                        </div>
+                                    </div>
+                                </div>
+                                {order.expireAt && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Expires <ClientDate value={order.expireAt} format="dateTime" placeholder="-" />
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="p-4 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 rounded-xl flex gap-3 text-sm border border-yellow-500/20">
+                                <AlertCircle className="h-5 w-5 shrink-0" />
+                                <p>{t('order.loginToView')}</p>
+                            </div>
+                        )
+                    ) : order.status === 'delivered' && !isPayment ? (
                         canViewKey ? (
                             <div className="space-y-4">
                                 <h3 className="font-semibold flex items-center gap-2">

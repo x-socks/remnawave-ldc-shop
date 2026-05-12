@@ -9,6 +9,7 @@ import { pullOneCardFromApi } from "@/lib/card-api";
 import { RESERVATION_TTL_MS } from "@/lib/constants";
 import { updateTag } from "next/cache";
 import { after } from "next/server";
+import { fulfillRemnawaveOrder } from "@/lib/remnawave/fulfillment";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -34,6 +35,19 @@ export async function processOrderFulfillment(orderId: string, paidAmount: numbe
         throw new Error(`Amount mismatch! Order: ${orderMoney}, Paid: ${paidAmount}`);
     }
 
+    const productType = await db.query.products.findFirst({
+        where: eq(products.id, order.productId),
+        columns: { type: true }
+    });
+
+    if (productType?.type === 'remnawave_subscription') {
+        return await fulfillRemnawaveOrder(orderId, paidAmount, tradeNo);
+    }
+
+    return await fulfillCardKeyOrder(order, orderId, tradeNo);
+}
+
+async function fulfillCardKeyOrder(order: typeof orders.$inferSelect, orderId: string, tradeNo: string) {
     const refreshAggregates = async () => {
         try {
             await recalcProductAggregates(order.productId);

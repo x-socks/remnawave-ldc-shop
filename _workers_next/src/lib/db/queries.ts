@@ -264,6 +264,8 @@ async function ensureDatabaseInitialized() {
             tier TEXT,
             months INTEGER,
             monthly_ldc INTEGER,
+            subscription_url TEXT,
+            expire_at INTEGER,
             points_used INTEGER DEFAULT 0,
             quantity INTEGER DEFAULT 1,
             current_payment_id TEXT,
@@ -463,6 +465,8 @@ async function ensureOrdersColumns() {
         await safeAddColumn('orders', 'tier', 'TEXT');
         await safeAddColumn('orders', 'months', 'INTEGER');
         await safeAddColumn('orders', 'monthly_ldc', 'INTEGER');
+        await safeAddColumn('orders', 'subscription_url', 'TEXT');
+        await safeAddColumn('orders', 'expire_at', 'INTEGER');
     });
 }
 

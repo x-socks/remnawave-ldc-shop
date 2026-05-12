@@ -64,6 +64,6 @@ slices land. Source of truth for plan: parent task PRD slices 2a–2i.
 - [x] **(Slice 2d) TS port**: pro-rate + tier math, with fixture-driven tests consuming JSON from the bot repo. Pro-rate + tier semantics mirrored from Go bot; fixture parity enforced via `test-fixtures/`.
 - [x] **(Slice 2e) TS Remnawave client**: `CreateOrUpdateUser` subset; externalId scheme `linuxdo_<sub>`. Added TS Remnawave client (subset). Web-side identity = `linuxdo_<sub>`.
 - [ ] **(Slice 2f) Schema**: add `orders.tier`, `orders.months`, `orders.monthly_ldc`; add `users.telegram_id` (nullable, for future v2 unification)
-- [ ] **(Slice 2g) Fulfilment patch**: `processOrderFulfillment` → lookup prior paid orders for same linuxdo_id → pro-rate → tier → Remnawave call → persist sub URL
+- [x] **(Slice 2g) Fulfilment patch**: `processOrderFulfillment` dispatches on `product.type`; Remnawave path provisions via pro-rate + tier + client port and persists the subscription URL on the order.
 - [x] **(Slice 2h) Wrangler + secrets**: linux.do OIDC client registration, LDC merchant config (shared MERCHANT_ID with bot, per-order `notify_url` discriminates destination)
 - [ ] **(Slice 2i) Deploy**: CF Workers + D1 + custom domain; e2e test_mode integration (pay 0.01 LDC → Remnawave user created → sub URL renders)

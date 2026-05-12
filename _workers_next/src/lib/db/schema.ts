@@ -60,6 +60,8 @@ export const orders = sqliteTable('orders', {
     tier: text('tier', { enum: ['LV0', 'LV1', 'LV2'] }),
     months: integer('months'),
     monthlyLdc: integer('monthly_ldc'),
+    subscriptionUrl: text('subscription_url'),
+    expireAt: integer('expire_at', { mode: 'timestamp_ms' }),
     payee: text('payee'),
     pointsUsed: integer('points_used').default(0),
     quantity: integer('quantity').default(1).notNull(),
