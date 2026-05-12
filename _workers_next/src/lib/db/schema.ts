@@ -4,6 +4,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 export const products = sqliteTable('products', {
     id: text('id').primaryKey(),
     name: text('name').notNull(),
+    type: text('type', { enum: ['card_key', 'remnawave_subscription'] }).notNull().default('card_key'),
     description: text('description'),
     price: text('price').notNull(), // SQLite doesn't have decimal, use text for precision
     compareAtPrice: text('compare_at_price'),
@@ -56,6 +57,9 @@ export const orders = sqliteTable('orders', {
     deliveredAt: integer('delivered_at', { mode: 'timestamp_ms' }),
     userId: text('user_id'),
     username: text('username'),
+    tier: text('tier', { enum: ['LV0', 'LV1', 'LV2'] }),
+    months: integer('months'),
+    monthlyLdc: integer('monthly_ldc'),
     payee: text('payee'),
     pointsUsed: integer('points_used').default(0),
     quantity: integer('quantity').default(1).notNull(),
@@ -68,6 +72,7 @@ export const loginUsers = sqliteTable('login_users', {
     userId: text('user_id').primaryKey(),
     username: text('username'),
     email: text('email'),
+    telegramId: text('telegram_id'),
     points: integer('points').default(0).notNull(),
     isBlocked: integer('is_blocked', { mode: 'boolean' }).default(false),
     desktopNotificationsEnabled: integer('desktop_notifications_enabled', { mode: 'boolean' }).default(false),

@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { BuyContent } from "@/components/buy-content"
 import { BuyRestricted } from "@/components/buy-restricted"
+import { RemnawaveSubscriptionForm } from "@/components/remnawave-subscription-form"
 import { getProduct, getProductVisibility, getLiveCardStats, getProductVariants, type ProductVariantRow } from "@/lib/db/queries"
 import { INFINITE_STOCK } from "@/lib/constants"
 
@@ -44,6 +45,15 @@ export default async function BuyPage({ params }: BuyPageProps) {
             notFound()
         }
         return <BuyRestricted requiredLevel={requiredLevel} isLoggedIn={isLoggedIn} />
+    }
+
+    if (product.type === 'remnawave_subscription') {
+        const sessionUserId = session?.user?.id ? String(session.user.id) : null
+        if (!sessionUserId || sessionUserId.startsWith('github:')) {
+            redirect(`/login?callbackUrl=${encodeURIComponent(`/buy/${id}`)}`)
+        }
+
+        return <RemnawaveSubscriptionForm product={product} />
     }
 
     const variantGroupId = product.variantGroupId?.trim() || null

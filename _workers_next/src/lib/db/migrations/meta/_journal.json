@@ -8,6 +8,13 @@
       "when": 1768253668351,
       "tag": "0000_overrated_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778563473396,
+      "tag": "0001_add_product_type_remnawave_order_metadata",
+      "breakpoints": true
     }
   ]
 }

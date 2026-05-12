@@ -9,7 +9,7 @@ import { PAYMENT_PRODUCT_ID, PAYMENT_PRODUCT_NAME } from "@/lib/payment"
 import { withOrderColumnFallback } from "@/lib/db/queries"
 import { getAdminUsernames } from "@/lib/admin-auth"
 
-function normalizeAmount(input: number | string) {
+function normalizePaymentAmount(input: number | string) {
     const parsed = Number.parseFloat(String(input))
     if (!Number.isFinite(parsed)) return null
     const rounded = Math.round(parsed * 100) / 100
@@ -17,11 +17,35 @@ function normalizeAmount(input: number | string) {
     return rounded
 }
 
+export async function buildPaymentSubmitParams(orderId: string, productName: string, amountInput: number | string) {
+    const normalized = normalizePaymentAmount(amountInput)
+    if (!normalized) return null
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const payParams: Record<string, any> = {
+        pid: process.env.MERCHANT_ID!,
+        type: 'epay',
+        out_trade_no: orderId,
+        notify_url: `${baseUrl}/api/notify`,
+        return_url: `${baseUrl}/callback/${orderId}`,
+        name: productName,
+        money: normalized.toFixed(2),
+        sign_type: 'MD5'
+    }
+
+    payParams.sign = generateSign(payParams, process.env.MERCHANT_KEY!)
+
+    return {
+        url: process.env.PAY_URL || 'https://credit.linux.do/epay/pay/submit.php',
+        params: payParams
+    }
+}
+
 export async function createPaymentOrder(amountInput: number | string, payeeInput?: string | null) {
     const session = await auth()
     const user = session?.user
 
-    const normalized = normalizeAmount(amountInput)
+    const normalized = normalizePaymentAmount(amountInput)
     if (!normalized) {
         return { success: false, error: 'payment.invalidAmount' }
     }
@@ -57,23 +81,14 @@ export async function createPaymentOrder(amountInput: number | string, payeeInpu
     const cookieStore = await cookies()
     cookieStore.set('ldc_pending_order', orderId, { secure: true, path: '/', sameSite: 'lax' })
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
-    const payParams: Record<string, any> = {
-        pid: process.env.MERCHANT_ID!,
-        type: 'epay',
-        out_trade_no: orderId,
-        notify_url: `${baseUrl}/api/notify`,
-        return_url: `${baseUrl}/callback/${orderId}`,
-        name: PAYMENT_PRODUCT_NAME,
-        money: amount,
-        sign_type: 'MD5'
+    const payment = await buildPaymentSubmitParams(orderId, PAYMENT_PRODUCT_NAME, amount)
+    if (!payment) {
+        return { success: false, error: 'payment.invalidAmount' }
     }
-
-    payParams.sign = generateSign(payParams, process.env.MERCHANT_KEY!)
 
     return {
         success: true,
-        url: process.env.PAY_URL || 'https://credit.linux.do/epay/pay/submit.php',
-        params: payParams
+        url: payment.url,
+        params: payment.params
     }
 }

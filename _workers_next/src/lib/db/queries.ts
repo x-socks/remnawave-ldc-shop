@@ -9,7 +9,7 @@ import { cache } from "react";
 let dbInitialized = false;
 let loginUsersSchemaReady = false;
 let wishlistTablesReady = false;
-const CURRENT_SCHEMA_VERSION = 20;
+const CURRENT_SCHEMA_VERSION = 21;
 type ColumnEnsureKey = 'products' | 'orders' | 'cards' | 'loginUsers';
 const columnEnsureState: Record<ColumnEnsureKey, { ready: boolean; pending: Promise<void> | null }> = {
     products: { ready: false, pending: null },
@@ -85,6 +85,7 @@ async function ensureIndexes() {
         `CREATE INDEX IF NOT EXISTS wishlist_votes_item_idx ON wishlist_votes(item_id, created_at)`,
         `CREATE UNIQUE INDEX IF NOT EXISTS wishlist_votes_item_user_uq ON wishlist_votes(item_id, user_id)`,
         `CREATE UNIQUE INDEX IF NOT EXISTS login_users_github_username_uq ON login_users(lower(username)) WHERE username IS NOT NULL AND lower(username) LIKE 'gh_%'`,
+        `CREATE UNIQUE INDEX IF NOT EXISTS login_users_telegram_id_uq ON login_users(telegram_id) WHERE telegram_id IS NOT NULL`,
     ];
 
     // ... rest of ensureIndexes ...
@@ -209,6 +210,7 @@ async function ensureDatabaseInitialized() {
         CREATE TABLE IF NOT EXISTS products (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
+            type TEXT NOT NULL DEFAULT 'card_key',
             description TEXT,
             price TEXT NOT NULL,
             compare_at_price TEXT,
@@ -259,6 +261,9 @@ async function ensureDatabaseInitialized() {
             delivered_at INTEGER,
             user_id TEXT,
             username TEXT,
+            tier TEXT,
+            months INTEGER,
+            monthly_ldc INTEGER,
             points_used INTEGER DEFAULT 0,
             quantity INTEGER DEFAULT 1,
             current_payment_id TEXT,
@@ -269,6 +274,7 @@ async function ensureDatabaseInitialized() {
         CREATE TABLE IF NOT EXISTS login_users (
             user_id TEXT PRIMARY KEY,
             username TEXT,
+            telegram_id TEXT,
             points INTEGER DEFAULT 0,
             is_blocked INTEGER DEFAULT 0,
             desktop_notifications_enabled INTEGER DEFAULT 0,
@@ -431,6 +437,7 @@ async function ensureDatabaseInitialized() {
 async function ensureProductsColumns() {
     await ensureColumnsOnce('products', async () => {
         await safeAddColumn('products', 'compare_at_price', 'TEXT');
+        await safeAddColumn('products', 'type', "TEXT NOT NULL DEFAULT 'card_key'");
         await safeAddColumn('products', 'is_hot', 'INTEGER DEFAULT 0');
         await safeAddColumn('products', 'purchase_warning', 'TEXT');
         await safeAddColumn('products', 'is_shared', 'INTEGER DEFAULT 0');
@@ -453,6 +460,9 @@ async function ensureOrdersColumns() {
         await safeAddColumn('orders', 'current_payment_id', 'TEXT');
         await safeAddColumn('orders', 'payee', 'TEXT');
         await safeAddColumn('orders', 'card_ids', 'TEXT');
+        await safeAddColumn('orders', 'tier', 'TEXT');
+        await safeAddColumn('orders', 'months', 'INTEGER');
+        await safeAddColumn('orders', 'monthly_ldc', 'INTEGER');
     });
 }
 
@@ -469,6 +479,7 @@ async function ensureLoginUsersColumns() {
         await safeAddColumn('login_users', 'last_checkin_at', 'INTEGER');
         await safeAddColumn('login_users', 'consecutive_days', 'INTEGER DEFAULT 0');
         await safeAddColumn('login_users', 'desktop_notifications_enabled', 'INTEGER DEFAULT 0');
+        await safeAddColumn('login_users', 'telegram_id', 'TEXT');
     });
 }
 
@@ -480,6 +491,7 @@ export async function ensureLoginUsersSchema() {
     await safeAddColumn('login_users', 'points', 'INTEGER DEFAULT 0 NOT NULL');
     await safeAddColumn('login_users', 'is_blocked', 'INTEGER DEFAULT 0');
     await safeAddColumn('login_users', 'desktop_notifications_enabled', 'INTEGER DEFAULT 0');
+    await safeAddColumn('login_users', 'telegram_id', 'TEXT');
     loginUsersSchemaReady = true;
 }
 
@@ -1060,6 +1072,7 @@ export async function getProduct(id: string, options?: { isLoggedIn?: boolean; t
         const result = await db.select({
             id: products.id,
             name: products.name,
+            type: products.type,
             description: products.description,
             price: products.price,
             compareAtPrice: products.compareAtPrice,
