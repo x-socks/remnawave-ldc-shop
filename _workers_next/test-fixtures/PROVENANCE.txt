@@ -1,0 +1,5 @@
+Source: /Users/oydodo/Documents/research/remnawave/.trellis/tasks/05-11-web-payment-ui-ldc-integration/fixtures
+Synced at: 2026-05-12T05:05:38Z
+
+922deb62a133acb72c087c98e32d13f703c4f3330656180169ffb540de10e829  prorate_fixtures.json
+a333a9d10b3219c373b9c9eb977e27ed7cb7db9868baf7c57912f7c71b642bd5  tier_fixtures.json

@@ -1,0 +1,150 @@
+{
+  "generated_at": "FIXTURE_BUILD",
+  "source": "internal/tier/tier.go:ComputeTier",
+  "schema_version": 1,
+  "cases": [
+    {
+      "name": "lv0_zero",
+      "input": {
+        "monthlyLDC": 0,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV0"
+      }
+    },
+    {
+      "name": "lv0_low_value",
+      "input": {
+        "monthlyLDC": 100,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV0"
+      }
+    },
+    {
+      "name": "lv0_just_below_t1",
+      "input": {
+        "monthlyLDC": 999,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV0"
+      }
+    },
+    {
+      "name": "lv1_exact_t1_boundary",
+      "input": {
+        "monthlyLDC": 1000,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV1"
+      }
+    },
+    {
+      "name": "lv1_mid_range",
+      "input": {
+        "monthlyLDC": 1500,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV1"
+      }
+    },
+    {
+      "name": "lv1_just_below_t2",
+      "input": {
+        "monthlyLDC": 1999,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV1"
+      }
+    },
+    {
+      "name": "lv2_exact_t2_boundary",
+      "input": {
+        "monthlyLDC": 2000,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV2"
+      }
+    },
+    {
+      "name": "lv2_mid_range",
+      "input": {
+        "monthlyLDC": 2500,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV2"
+      }
+    },
+    {
+      "name": "lv2_top_of_stepper",
+      "input": {
+        "monthlyLDC": 10000,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV2"
+      }
+    },
+    {
+      "name": "lv2_very_large",
+      "input": {
+        "monthlyLDC": 1000000,
+        "tier1Threshold": 1000,
+        "tier2Threshold": 2000
+      },
+      "expected": {
+        "tier": "LV2"
+      }
+    },
+    {
+      "name": "custom_thresholds_lv1_at_500",
+      "input": {
+        "monthlyLDC": 500,
+        "tier1Threshold": 500,
+        "tier2Threshold": 1000
+      },
+      "expected": {
+        "tier": "LV1"
+      }
+    },
+    {
+      "name": "custom_thresholds_lv2_at_1000",
+      "input": {
+        "monthlyLDC": 1000,
+        "tier1Threshold": 500,
+        "tier2Threshold": 1000
+      },
+      "expected": {
+        "tier": "LV2"
+      }
+    },
+    {
+      "name": "custom_thresholds_lv0_below_500",
+      "input": {
+        "monthlyLDC": 499,
+        "tier1Threshold": 500,
+        "tier2Threshold": 1000
+      },
+      "expected": {
+        "tier": "LV0"
+      }
+    }
+  ]
+}

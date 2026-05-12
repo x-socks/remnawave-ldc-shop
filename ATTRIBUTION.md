@@ -61,7 +61,7 @@ slices land. Source of truth for plan: parent task PRD slices 2a–2i.
 - [x] **(Slice 2a) Bootstrap**: LICENSE, ATTRIBUTION.md, README rewrite, remote reconfigure, upstream-sync workflow removed
 - [ ] **(Slice 2b) Strip**: hide/remove coupons, checkin/points, admin panel, multi-product list, SKU multi-spec
 - [ ] **(Slice 2c) Add**: single product "Remnawave Subscription" + custom detail-page form (tier dropdown + months 1–12 + computed price)
-- [ ] **(Slice 2d) TS port**: pro-rate + tier math, with fixture-driven tests consuming JSON from the bot repo
+- [x] **(Slice 2d) TS port**: pro-rate + tier math, with fixture-driven tests consuming JSON from the bot repo. Pro-rate + tier semantics mirrored from Go bot; fixture parity enforced via `test-fixtures/`.
 - [ ] **(Slice 2e) TS Remnawave client**: `CreateOrUpdateUser` subset; externalId scheme `linuxdo_<sub>`
 - [ ] **(Slice 2f) Schema**: add `orders.tier`, `orders.months`, `orders.monthly_ldc`; add `users.telegram_id` (nullable, for future v2 unification)
 - [ ] **(Slice 2g) Fulfilment patch**: `processOrderFulfillment` → lookup prior paid orders for same linuxdo_id → pro-rate → tier → Remnawave call → persist sub URL

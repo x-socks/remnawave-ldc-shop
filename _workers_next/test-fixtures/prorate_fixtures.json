@@ -1,0 +1,283 @@
+{
+  "generated_at": "FIXTURE_BUILD",
+  "source": "internal/payment/prorate.go:ProrateRenewal",
+  "schema_version": 1,
+  "cases": [
+    {
+      "name": "first_purchase_1month_rate100",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "first_purchase_1month_rate200",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 200,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 15
+      }
+    },
+    {
+      "name": "first_purchase_3months_rate100",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 100,
+        "paymentLDC": 300
+      },
+      "expected": {
+        "newDays": 90
+      }
+    },
+    {
+      "name": "first_purchase_low_payment_floor",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 300,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 10
+      }
+    },
+    {
+      "name": "same_rate_renewal_100_30days_remaining",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 100,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 60
+      }
+    },
+    {
+      "name": "same_rate_renewal_100_no_days_remaining",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 100,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "same_rate_renewal_200_3months_remaining",
+      "input": {
+        "currentDaysLeft": 90,
+        "oldRate": 200,
+        "newRate": 200,
+        "paymentLDC": 600
+      },
+      "expected": {
+        "newDays": 180
+      }
+    },
+    {
+      "name": "upgrade_100_to_200_30days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 100,
+        "newRate": 200,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "upgrade_100_to_500_30days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 100,
+        "newRate": 500,
+        "paymentLDC": 500
+      },
+      "expected": {
+        "newDays": 36
+      }
+    },
+    {
+      "name": "upgrade_50_to_300_15days_payment_300",
+      "input": {
+        "currentDaysLeft": 15,
+        "oldRate": 50,
+        "newRate": 300,
+        "paymentLDC": 300
+      },
+      "expected": {
+        "newDays": 32
+      }
+    },
+    {
+      "name": "downgrade_200_to_100_30days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 200,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 60
+      }
+    },
+    {
+      "name": "downgrade_500_to_100_30days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 500,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 60
+      }
+    },
+    {
+      "name": "downgrade_300_to_50_60days_payment_50",
+      "input": {
+        "currentDaysLeft": 60,
+        "oldRate": 300,
+        "newRate": 50,
+        "paymentLDC": 50
+      },
+      "expected": {
+        "newDays": 90
+      }
+    },
+    {
+      "name": "legacy_fallback_pre_substitution_drops_days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 0,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "legacy_fallback_post_substitution_keeps_days",
+      "input": {
+        "currentDaysLeft": 30,
+        "oldRate": 100,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 60
+      }
+    },
+    {
+      "name": "boundary_payment_exactly_monthly_rate",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 250,
+        "paymentLDC": 250
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "boundary_payment_one_below_monthly_rate",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 100,
+        "paymentLDC": 99
+      },
+      "expected": {
+        "newDays": 29
+      }
+    },
+    {
+      "name": "boundary_payment_one_above_monthly_rate",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 100,
+        "paymentLDC": 101
+      },
+      "expected": {
+        "newDays": 30
+      }
+    },
+    {
+      "name": "floor_truncation_exact_division",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 300,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 10
+      }
+    },
+    {
+      "name": "floor_truncation_non_exact_division",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 301,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 9
+      }
+    },
+    {
+      "name": "large_values_first_purchase",
+      "input": {
+        "currentDaysLeft": 0,
+        "oldRate": 0,
+        "newRate": 10000,
+        "paymentLDC": 120000
+      },
+      "expected": {
+        "newDays": 360
+      }
+    },
+    {
+      "name": "large_values_upgrade",
+      "input": {
+        "currentDaysLeft": 365,
+        "oldRate": 1000,
+        "newRate": 5000,
+        "paymentLDC": 60000
+      },
+      "expected": {
+        "newDays": 433
+      }
+    },
+    {
+      "name": "negative_current_days_clamped",
+      "input": {
+        "currentDaysLeft": -5,
+        "oldRate": 100,
+        "newRate": 100,
+        "paymentLDC": 100
+      },
+      "expected": {
+        "newDays": 30
+      }
+    }
+  ]
+}
