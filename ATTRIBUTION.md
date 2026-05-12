@@ -65,5 +65,5 @@ slices land. Source of truth for plan: parent task PRD slices 2a–2i.
 - [ ] **(Slice 2e) TS Remnawave client**: `CreateOrUpdateUser` subset; externalId scheme `linuxdo_<sub>`
 - [ ] **(Slice 2f) Schema**: add `orders.tier`, `orders.months`, `orders.monthly_ldc`; add `users.telegram_id` (nullable, for future v2 unification)
 - [ ] **(Slice 2g) Fulfilment patch**: `processOrderFulfillment` → lookup prior paid orders for same linuxdo_id → pro-rate → tier → Remnawave call → persist sub URL
-- [ ] **(Slice 2h) Wrangler + secrets**: linux.do OIDC client registration, LDC merchant config (shared MERCHANT_ID with bot, per-order `notify_url` discriminates destination)
+- [x] **(Slice 2h) Wrangler + secrets**: linux.do OIDC client registration, LDC merchant config (shared MERCHANT_ID with bot, per-order `notify_url` discriminates destination)
 - [ ] **(Slice 2i) Deploy**: CF Workers + D1 + custom domain; e2e test_mode integration (pay 0.01 LDC → Remnawave user created → sub URL renders)

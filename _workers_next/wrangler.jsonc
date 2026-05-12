@@ -1,0 +1,45 @@
+{
+    "name": "ldc-shop-next",
+    "main": "worker-entry.mjs",
+    "keep_names": true,
+    "keep_vars": true,
+    "compatibility_date": "2025-11-12",
+    "compatibility_flags": [
+        "nodejs_compat"
+    ],
+    "assets": {
+        "directory": ".open-next/assets",
+        "binding": "ASSETS"
+    },
+    "vars": {
+        "NEXT_PUBLIC_APP_URL": "PLACEHOLDER_REPLACE_ME",
+        "MERCHANT_ID": "PLACEHOLDER_REPLACE_ME",
+        "REMNAWAVE_BASE_URL": "PLACEHOLDER_REPLACE_ME",
+        "EXTERNAL_SQUAD_UUID": "PLACEHOLDER_REPLACE_ME",
+        "TIER1_THRESHOLD": "PLACEHOLDER_REPLACE_ME",
+        "TIER2_THRESHOLD": "PLACEHOLDER_REPLACE_ME",
+        "OIDC_ISSUER_URL": "https://connect.linux.do",
+        "OIDC_CLIENT_ID": "PLACEHOLDER_REPLACE_ME"
+    },
+    // Secrets are configured with Wrangler, never committed as config keys:
+    //   wrangler secret put MERCHANT_KEY
+    //   wrangler secret put REMNAWAVE_TOKEN
+    //   wrangler secret put OIDC_CLIENT_SECRET
+    //   wrangler secret put AUTH_SECRET
+    // AUTH_SECRET already existed in upstream deploy documentation.
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "ldc-shop-next",
+            "database_id": "PLACEHOLDER_REPLACE_ME"
+        }
+    ],
+    "triggers": {
+        "crons": [
+            "* * * * *"
+        ]
+    },
+    "observability": {
+        "enabled": true
+    }
+}

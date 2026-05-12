@@ -102,7 +102,7 @@
 2. 左侧菜单 **Storage & Databases** → **D1**
 3. 点击 **Create database**，输入名称：**`ldc-shop-next`**
 
-> 💡 **推荐使用默认名称 `ldc-shop-next`**：项目的 `wrangler.json` 已配置自动绑定此名称的数据库，使用默认名称可以跳过手动绑定步骤。
+> 💡 **推荐使用默认名称 `ldc-shop-next`**：项目的 `wrangler.jsonc` 已配置自动绑定此名称的数据库，使用默认名称可以跳过手动绑定步骤。
 
 #### 2. 连接 Git 仓库部署
 
@@ -316,3 +316,49 @@ ABC-DEF-123
 
 ## 📄 许可证
 MIT
+
+
+## Deploying the fork
+
+Use this recipe for the Remnawave LDC web fork. Commands are shown for an operator shell in `_workers_next`; do not commit real secrets.
+
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+2. Authenticate Wrangler interactively:
+   ```bash
+   wrangler login
+   ```
+3. Create the D1 database, or reuse the upstream database name already configured as `ldc-shop-next`:
+   ```bash
+   wrangler d1 create ldc-shop-next
+   ```
+4. Update `wrangler.jsonc` with the D1 `database_id` returned by step 3.
+5. Run migrations. `_workers_next/package.json` does not currently define a `db:migrate` script; this upstream Worker build creates tables on first visit, and future explicit D1 migrations should use Wrangler's D1 migration command for the configured DB.
+6. Set secrets using [`docs/secrets.md`](docs/secrets.md):
+   ```bash
+   wrangler secret put MERCHANT_KEY
+   wrangler secret put REMNAWAVE_TOKEN
+   wrangler secret put OIDC_CLIENT_SECRET
+   wrangler secret put AUTH_SECRET
+   ```
+7. Replace the placeholder vars in `wrangler.jsonc` using [`docs/secrets.md`](docs/secrets.md) as the source of truth. Keep `NEXT_PUBLIC_APP_URL` as a var, not a secret.
+8. Register the linux.do OIDC client using [`docs/oidc-setup.md`](docs/oidc-setup.md).
+9. Register or update the LDC merchant using [`docs/ldc-merchant-setup.md`](docs/ldc-merchant-setup.md).
+10. Deploy the Worker:
+    ```bash
+    wrangler deploy
+    ```
+11. After deploy, set up the custom domain in the Cloudflare dashboard and update `NEXT_PUBLIC_APP_URL` if the hostname changed.
+12. Run one end-to-end test-mode payment flow and verify the paid order reaches the Remnawave fulfilment path.
+
+### Updating fixtures
+
+When the bot updates pro-rate or tier semantics, re-run:
+
+```bash
+scripts/sync-fixtures.sh
+```
+
+Commit the updated `test-fixtures/*.json` files with the web fork. If fixture output changes behavior, update the TypeScript port in the same change so the TS tests and bot fixtures remain aligned.
