@@ -179,6 +179,28 @@
             "processed": "已处理"
         }
     },
+    "remnawave": {
+        "vpnLabel": "Remnawave VPN",
+        "fallbackDescription": "按月计费的 Remnawave VPN 订阅。",
+        "subscriptionTitle": "订阅",
+        "subscriptionDescription": "设置每月 LDC 数量和订阅时长。",
+        "monthlyLdcLabel": "每月 LDC（× 100）",
+        "monthlyLdcHelper": "100 LDC × {{units}} = {{total}} LDC/月",
+        "monthlyLdcRangeHelper": "允许范围：{{min}} - {{max}} 份（每份 100 LDC）。",
+        "monthlyLdcAdvancedHelper": "允许范围：{{min}} - {{max}} LDC/月。",
+        "monthlyLdcErrorRange": "每月 LDC 份数必须在 {{min}} 至 {{max}} 之间。",
+        "monthlyLdcErrorInteger": "每月 LDC 份数必须是整数。",
+        "monthlyLdcErrorRawRange": "每月 LDC 必须为 {{min}} 至 {{max}} 之间的整数。",
+        "monthsLabel": "订阅月数",
+        "tierBadge": "等级：{{tier}}",
+        "computedPriceLabel": "应付金额",
+        "computedPriceBreakdown": "{{monthlyLdc}} LDC/月 × {{months}} 月",
+        "computedPriceBreakdownPlural": "{{monthlyLdc}} LDC/月 × {{months}} 月",
+        "payButton": "通过 Linux DO Credit 支付 {{total}} LDC",
+        "errorMonthsRange": "月数必须为 1 到 12 之间的整数。",
+        "errorInvalidMonthly": "无效的每月 LDC 数量。",
+        "errorCouldNotStart": "无法发起支付。"
+    },
     "order": {
         "title": "订单详情",
         "product": "商品",

@@ -422,7 +422,7 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
                                         {t('order.goReview')}
                                     </Button>
                                 )}
-                                {Number(order.amount) > 0 && !refundRequest?.status && (
+                                {Number(order.amount) > 0 && !refundRequest?.status && !isRemnawaveSubscription && (
                                     <Button
                                         variant="destructive"
                                         className={order.productId && !isPayment ? "flex-1" : "w-full"}

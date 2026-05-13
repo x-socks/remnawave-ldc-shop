@@ -179,6 +179,28 @@
             "processed": "Processed"
         }
     },
+    "remnawave": {
+        "vpnLabel": "Remnawave VPN",
+        "fallbackDescription": "Pay-as-you-go monthly Remnawave VPN subscription.",
+        "subscriptionTitle": "Subscription",
+        "subscriptionDescription": "Pick a monthly LDC amount and length.",
+        "monthlyLdcLabel": "Monthly LDC (units of 100)",
+        "monthlyLdcHelper": "100 LDC x {{units}} = {{total}} LDC/month",
+        "monthlyLdcRangeHelper": "Allowed range: {{min}} - {{max}} units (100 LDC each).",
+        "monthlyLdcAdvancedHelper": "Allowed range: {{min}} - {{max}} LDC/month.",
+        "monthlyLdcErrorRange": "Monthly LDC units must be between {{min}} and {{max}}.",
+        "monthlyLdcErrorInteger": "Monthly LDC units must be a whole number.",
+        "monthlyLdcErrorRawRange": "Monthly LDC must be an integer between {{min}} and {{max}}.",
+        "monthsLabel": "Months",
+        "tierBadge": "Tier: {{tier}}",
+        "computedPriceLabel": "Computed price",
+        "computedPriceBreakdown": "{{monthlyLdc}} LDC/month x {{months}} month",
+        "computedPriceBreakdownPlural": "{{monthlyLdc}} LDC/month x {{months}} months",
+        "payButton": "Pay {{total}} LDC via Linux DO Credit",
+        "errorMonthsRange": "Months must be an integer from 1 to 12.",
+        "errorInvalidMonthly": "Invalid monthly LDC amount.",
+        "errorCouldNotStart": "Payment could not be started."
+    },
     "order": {
         "title": "Order Details",
         "product": "Product",
