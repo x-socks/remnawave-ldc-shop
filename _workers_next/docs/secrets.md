@@ -8,6 +8,9 @@ This fork keeps non-secret configuration in `wrangler.jsonc` and stores sensitiv
 | `MERCHANT_ID` | var | Linux DO Credit merchant dashboard after registering the shared merchant app. | `PLACEHOLDER_REPLACE_ME` | 2h |
 | `REMNAWAVE_BASE_URL` | var | Remnawave panel base URL from the panel operator. | `https://remnawave.example.com` | 2h |
 | `EXTERNAL_SQUAD_UUID` | var | Remnawave external squad UUID for provisioned web users. | `PLACEHOLDER_REPLACE_ME` | 2h |
+| `LV0_SQUAD_UUIDS` | var | Per-tier squad UUIDs (comma-separated). Empty tier = unpurchasable. Match the bot's `LV{N}_SQUAD_UUIDS` semantics. | `PLACEHOLDER_REPLACE_ME` | 2i |
+| `LV1_SQUAD_UUIDS` | var | Per-tier squad UUIDs (comma-separated). Empty tier = unpurchasable. Match the bot's `LV{N}_SQUAD_UUIDS` semantics. | `PLACEHOLDER_REPLACE_ME` | 2i |
+| `LV2_SQUAD_UUIDS` | var | Per-tier squad UUIDs (comma-separated). Empty tier = unpurchasable. Match the bot's `LV{N}_SQUAD_UUIDS` semantics. | `PLACEHOLDER_REPLACE_ME` | 2i |
 | `TIER1_THRESHOLD` | var | Bot tier configuration; keep aligned with fixture semantics. | `PLACEHOLDER_REPLACE_ME` | 2h |
 | `TIER2_THRESHOLD` | var | Bot tier configuration; keep aligned with fixture semantics. | `PLACEHOLDER_REPLACE_ME` | 2h |
 | `OIDC_ISSUER_URL` | var | linux.do OIDC issuer. | `https://connect.linux.do` | 2h |
