@@ -192,6 +192,7 @@
         "waitingPayment": "等待支付...",
         "paymentReceived": "已收到付款，正在处理发货...",
         "stockDepleted": "非常抱歉！由于多人几乎同时下单付款，您慢了一步，最后的库存刚好被抢走。您的付款已收到，请联系管理员申请全额退款。",
+        "subscriptionProvisioning": "支付已收到 — Remnawave 订阅正在生成。通常只需几秒，稍后刷新即可。",
         "orderRefunded": "此订单已退款",
         "cancelledMessage": "订单已取消。",
         "cancelOrder": "取消订单",

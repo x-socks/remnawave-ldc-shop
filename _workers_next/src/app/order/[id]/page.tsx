@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { orders, refundRequests } from "@/lib/db/schema"
+import { orders, products, refundRequests } from "@/lib/db/schema"
 import { and, desc, eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 import { cookies } from "next/headers"
@@ -44,6 +44,19 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     const labels = order.productId ? await getProductVariantLabels([order.productId]) : {}
     const productVariantLabel = order.productId ? labels[order.productId] ?? null : null
 
+    let productType: string | null = null
+    if (order.productId) {
+        try {
+            const product = await db.query.products.findFirst({
+                where: eq(products.id, order.productId),
+                columns: { type: true },
+            })
+            productType = product?.type ?? null
+        } catch {
+            productType = null
+        }
+    }
+
     return (
         <OrderContent
             order={{
@@ -51,6 +64,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 productId: order.productId,
                 productName: order.productName,
                 productVariantLabel,
+                productType,
                 amount: order.amount,
                 status: order.status || 'pending',
                 cardKey: order.cardKey,

@@ -192,6 +192,7 @@
         "waitingPayment": "Waiting for payment...",
         "paymentReceived": "Payment received. Processing delivery...",
         "stockDepleted": "We're sorry! Multiple customers paid almost simultaneously, and the last item was claimed just before your payment completed. Your payment has been received — please contact admin for a full refund.",
+        "subscriptionProvisioning": "Payment received — your Remnawave subscription is being provisioned. This usually takes a few seconds; refresh in a moment.",
         "orderRefunded": "This order has been refunded.",
         "cancelledMessage": "This order has been cancelled.",
         "cancelOrder": "Cancel Order",

@@ -23,6 +23,7 @@ interface Order {
     productId?: string | null
     productName: string
     productVariantLabel?: string | null
+    productType?: string | null
     amount: string
     status: string
     cardKey: string | null
@@ -47,6 +48,7 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
     const [confirmOpen, setConfirmOpen] = useState(false)
     const submitLock = useRef(false)
     const isPayment = isPaymentOrder(order.productId)
+    const isRemnawaveSubscription = order.productType === 'remnawave_subscription'
 
     const handleRefundConfirm = async () => {
         if (submitLock.current) return
@@ -80,7 +82,10 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
 
     const getStatusMessage = (status: string) => {
         switch (status) {
-            case 'paid': return isPayment ? t('payment.paidMessage') : t('order.stockDepleted')
+            case 'paid':
+                if (isPayment) return t('payment.paidMessage')
+                if (isRemnawaveSubscription) return t('order.subscriptionProvisioning')
+                return t('order.stockDepleted')
             case 'cancelled': return t('order.cancelledMessage')
             case 'refunded': return t('order.orderRefunded')
             default: return t('order.waitingPayment')
@@ -92,7 +97,9 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
 
     // Check status on mount and polling
     useEffect(() => {
-        if (order.status !== 'pending') return
+        const isPending = order.status === 'pending'
+        const isProvisioning = order.status === 'paid' && isRemnawaveSubscription
+        if (!isPending && !isProvisioning) return
 
         let mounted = true
         let intervalId: NodeJS.Timeout
@@ -100,8 +107,11 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
         const check = async () => {
             try {
                 const result = await checkOrderStatus(order.orderId)
-                if (result.success && (result.status === 'paid' || result.status === 'delivered') && mounted) {
+                if (!mounted) return
+                if (isPending && result.success && (result.status === 'paid' || result.status === 'delivered')) {
                     toast.success(t('order.paymentSuccess'))
+                    router.refresh()
+                } else if (isProvisioning && result.success && result.status === 'delivered') {
                     router.refresh()
                 }
             } catch (e) {
@@ -127,7 +137,7 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
             mounted = false
             clearInterval(intervalId)
         }
-    }, [order.status, order.orderId, router, t])
+    }, [order.status, order.orderId, isRemnawaveSubscription, router, t])
 
     return (
         <main className="container py-12 max-w-2xl">
@@ -296,12 +306,18 @@ export function OrderContent({ order, canViewKey, isOwner, refundRequest }: Orde
                         <div className={`flex items-center justify-between gap-3 p-4 rounded-xl border ${order.status === 'paid'
                             ? (isPayment
                                 ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20'
-                                : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20')
+                                : isRemnawaveSubscription
+                                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+                                    : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20')
                             : 'bg-muted/20 text-muted-foreground border-border/30'
                             }`}>
                             <div className="flex items-center gap-3">
                                 {order.status === 'paid' ? (
-                                    isPayment ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />
+                                    isPayment
+                                        ? <CheckCircle2 className="h-5 w-5" />
+                                        : isRemnawaveSubscription
+                                            ? <Loader2 className="h-5 w-5 animate-spin" />
+                                            : <AlertCircle className="h-5 w-5" />
                                 ) : (
                                     <Clock className="h-5 w-5" />
                                 )}
