@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, ne } from "drizzle-orm";
 
 import { db } from "../db";
 import { loginUsers, orders, products } from "../db/schema";
@@ -255,23 +255,22 @@ export const defaultRemnawaveFulfillmentStore: RemnawaveFulfillmentStore = {
     },
 
     async markOrderPaidIfPending({ orderId, tradeNo, paidAt }) {
-        await db.run(sql`BEGIN IMMEDIATE`);
-        try {
-            const rows = await db.update(orders)
-                .set({
-                    status: "paid",
-                    paidAt,
-                    tradeNo,
-                    currentPaymentId: null,
-                })
-                .where(and(eq(orders.orderId, orderId), inArray(orders.status, ["pending", "cancelled"])))
-                .returning({ orderId: orders.orderId });
-            await db.run(sql`COMMIT`);
-            return rows.length > 0;
-        } catch (error) {
-            await db.run(sql`ROLLBACK`).catch(() => undefined);
-            throw error;
-        }
+        // D1 forbids raw `BEGIN IMMEDIATE` / `COMMIT` / `ROLLBACK` statements
+        // (state.storage.transaction() is the documented escape hatch). A single
+        // `UPDATE ... WHERE status IN (...) ... RETURNING` is already atomic on
+        // D1 / SQLite, so the CAS-once contract is preserved without a wrapper:
+        // first call wins the row, concurrent / retried calls match 0 rows and
+        // return false → caller branches to "already_processed".
+        const rows = await db.update(orders)
+            .set({
+                status: "paid",
+                paidAt,
+                tradeNo,
+                currentPaymentId: null,
+            })
+            .where(and(eq(orders.orderId, orderId), inArray(orders.status, ["pending", "cancelled"])))
+            .returning({ orderId: orders.orderId });
+        return rows.length > 0;
     },
 
     async persistProvisioningResult({ orderId, subscriptionUrl, expireAt, deliveredAt, tradeNo }) {
