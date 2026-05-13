@@ -16,7 +16,7 @@ Operator steps:
    - Redirect URI: `<NEXT_PUBLIC_APP_URL>/api/auth/callback/linuxdo`
    - Scopes: `openid profile email`
 5. Copy `client_id` and `client_secret` immediately. The secret is expected to be a one-time view.
-6. Put `client_id` in `wrangler.jsonc` as `OIDC_CLIENT_ID`.
-7. Store `client_secret` with `wrangler secret put OIDC_CLIENT_SECRET`.
+6. Put `client_id` in `wrangler.jsonc` as `OAUTH_CLIENT_ID`.
+7. Store `client_secret` with `wrangler secret put OAUTH_CLIENT_SECRET`.
 
 Reference: [`linuxdo-oauth.md`](../../../remnawave/.trellis/tasks/05-11-web-payment-ui-ldc-integration/research/linuxdo-oauth.md).

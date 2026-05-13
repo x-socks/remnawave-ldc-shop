@@ -19,12 +19,12 @@
         "TIER1_THRESHOLD": "PLACEHOLDER_REPLACE_ME",
         "TIER2_THRESHOLD": "PLACEHOLDER_REPLACE_ME",
         "OIDC_ISSUER_URL": "https://connect.linux.do",
-        "OIDC_CLIENT_ID": "PLACEHOLDER_REPLACE_ME"
+        "OAUTH_CLIENT_ID": "PLACEHOLDER_REPLACE_ME"
     },
     // Secrets are configured with Wrangler, never committed as config keys:
     //   wrangler secret put MERCHANT_KEY
     //   wrangler secret put REMNAWAVE_TOKEN
-    //   wrangler secret put OIDC_CLIENT_SECRET
+    //   wrangler secret put OAUTH_CLIENT_SECRET
     //   wrangler secret put AUTH_SECRET
     // AUTH_SECRET already existed in upstream deploy documentation.
     "d1_databases": [

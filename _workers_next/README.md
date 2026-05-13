@@ -340,7 +340,7 @@ Use this recipe for the Remnawave LDC web fork. Commands are shown for an operat
    ```bash
    wrangler secret put MERCHANT_KEY
    wrangler secret put REMNAWAVE_TOKEN
-   wrangler secret put OIDC_CLIENT_SECRET
+   wrangler secret put OAUTH_CLIENT_SECRET
    wrangler secret put AUTH_SECRET
    ```
 7. Replace the placeholder vars in `wrangler.jsonc` using [`docs/secrets.md`](docs/secrets.md) as the source of truth. Keep `NEXT_PUBLIC_APP_URL` as a var, not a secret.
