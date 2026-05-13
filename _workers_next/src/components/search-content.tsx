@@ -16,6 +16,7 @@ type Product = {
   id: string
   name: string
   description: string | null
+  type?: string | null
   price: string
   compareAtPrice: string | null
   image: string | null
@@ -128,7 +129,9 @@ export function SearchContent(props: {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {props.products.map((product) => (
+          {props.products.map((product) => {
+            const isRemnawaveSubscription = product.type === 'remnawave_subscription'
+            return (
             <Card key={product.id} className="group overflow-hidden hover:border-primary/30 transition-all duration-300 tech-card flex flex-col">
               <div className="relative overflow-hidden">
                 {product.isHot && (
@@ -158,9 +161,15 @@ export function SearchContent(props: {
                 <div className="shrink-0 flex flex-col">
                   <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t('common.credits')}</span>
                   <div className="flex items-end gap-2">
-                    <span className="text-2xl font-bold font-mono tracking-tight">{Number(product.price)}</span>
-                    {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
-                      <span className="text-xs text-muted-foreground line-through">{Number(product.compareAtPrice)}</span>
+                    {isRemnawaveSubscription ? (
+                      <span className="text-2xl font-bold font-mono tracking-tight">{t('common.unlimited')}</span>
+                    ) : (
+                      <>
+                        <span className="text-2xl font-bold font-mono tracking-tight">{Number(product.price)}</span>
+                        {product.compareAtPrice && Number(product.compareAtPrice) > Number(product.price) && (
+                          <span className="text-xs text-muted-foreground line-through">{Number(product.compareAtPrice)}</span>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -169,12 +178,14 @@ export function SearchContent(props: {
                     <Badge variant="outline" className="text-[10px] h-5 px-2 text-muted-foreground border-border/50 whitespace-nowrap min-w-max overflow-visible">
                       {t('common.sold')} {product.soldCount}
                     </Badge>
-                    <Badge
-                      variant={product.stockCount > 0 ? "secondary" : "destructive"}
-                      className={cn("text-[10px] h-5 px-2 whitespace-nowrap min-w-max overflow-visible")}
-                    >
-                      {product.stockCount > 0 ? `${t('common.stock')} ${product.stockCount}` : t('common.outOfStock')}
-                    </Badge>
+                    {!isRemnawaveSubscription && (
+                      <Badge
+                        variant={product.stockCount > 0 ? "secondary" : "destructive"}
+                        className={cn("text-[10px] h-5 px-2 whitespace-nowrap min-w-max overflow-visible")}
+                      >
+                        {product.stockCount > 0 ? `${t('common.stock')} ${product.stockCount}` : t('common.outOfStock')}
+                      </Badge>
+                    )}
                   </div>
                   <Link href={`/buy/${product.id}`} className="w-full">
                     <Button size="sm" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 whitespace-nowrap shadow-md hover:shadow-lg transition-all">
@@ -184,7 +195,8 @@ export function SearchContent(props: {
                 </div>
               </CardFooter>
             </Card>
-          ))}
+            )
+          })}
         </div>
       )}
 

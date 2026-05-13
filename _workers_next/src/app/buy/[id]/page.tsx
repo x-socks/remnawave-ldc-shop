@@ -5,6 +5,7 @@ import { BuyRestricted } from "@/components/buy-restricted"
 import { RemnawaveSubscriptionForm } from "@/components/remnawave-subscription-form"
 import { getProduct, getProductVisibility, getLiveCardStats, getProductVariants, type ProductVariantRow } from "@/lib/db/queries"
 import { INFINITE_STOCK } from "@/lib/constants"
+import { resolveMonthlyLdcBounds, parsePositiveInt } from "@/lib/remnawave-subscription"
 
 interface BuyPageProps {
     params: Promise<{ id: string }>
@@ -53,7 +54,18 @@ export default async function BuyPage({ params }: BuyPageProps) {
             redirect(`/login?callbackUrl=${encodeURIComponent(`/buy/${id}`)}`)
         }
 
-        return <RemnawaveSubscriptionForm product={product} />
+        const bounds = resolveMonthlyLdcBounds()
+        const tier1Threshold = parsePositiveInt(process.env.TIER1_THRESHOLD, 1000)
+        const tier2Threshold = parsePositiveInt(process.env.TIER2_THRESHOLD, 2000)
+
+        return (
+            <RemnawaveSubscriptionForm
+                product={product}
+                bounds={bounds}
+                tier1Threshold={tier1Threshold}
+                tier2Threshold={tier2Threshold}
+            />
+        )
     }
 
     const variantGroupId = product.variantGroupId?.trim() || null

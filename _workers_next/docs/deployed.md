@@ -120,6 +120,22 @@ Fix (commit `ec4ec30`): a single `UPDATE ... WHERE status IN (...) ... RETURNING
 
 Per slice 2i decision A2, `_workers_next/wrangler.jsonc` is kept with **placeholder values** in the committed copy and **real values** in the local working tree (`git status` shows `M wrangler.jsonc` persistently). This protects the operator's panel URL + merchant ID + squad UUIDs from leaking into the public fork. Anyone cloning the fork must re-populate per this runbook before deploying.
 
+## Slice 2j additions (2026-05-13)
+
+New server-side `wrangler.jsonc` vars (no `NEXT_PUBLIC_` prefix — read by the BuyPage server component + `createRemnawavePaymentOrder` action and passed to the form as props):
+
+| Name | Sample | Purpose |
+|---|---|---|
+| `LDC_MIN_MONTHLY` | `100` | Lower bound for the buy-form's monthly LDC stepper. |
+| `LDC_MAX_MONTHLY` | `10000` | Upper bound for the buy-form's monthly LDC stepper. |
+| `LDC_DEFAULT_MONTHLY` | `100` | Default value on first render. |
+
+Behaviour changes the operator should know about:
+
+- `src/lib/remnawave-subscription.ts` no longer exports `TIER_RATES`. The fork is now bot-parity: the buy form takes a free `monthly_ldc` integer input (clamped to the bounds above) and the tier (LV0/LV1/LV2) is derived from `monthly_ldc` against `TIER1_THRESHOLD` / `TIER2_THRESHOLD`. Server re-derives the tier from `monthly_ldc` on submit; any tier value posted by the client is ignored.
+- Homepage / search product cards for `type='remnawave_subscription'` no longer show "out of stock" or a numeric price; they render an "Unlimited" badge and skip the stock indicator (this product is `is_shared=1` and stock_count is intentionally `NULL`).
+- Per A2 strategy the committed `wrangler.jsonc` carries `PLACEHOLDER_REPLACE_ME` for the three new vars; replace them locally before `pnpm run deploy`. Defaults baked into the code (100 / 10000 / 100) match the bot's `.env.sample`, so an empty/placeholder value falls back to the bot defaults without breaking the form.
+
 ---
 
 Captured at slice 2i sign-off, 2026-05-13.

@@ -4,7 +4,13 @@ import { useMemo, useState, type FormEvent } from "react"
 import { CreditCard, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { createRemnawavePaymentOrder } from "@/actions/remnawave-payment"
-import { TIER_RATES, type RemnawaveTier, isRemnawaveTier, normalizeSubscriptionMonths } from "@/lib/remnawave-subscription"
+import {
+    normalizeSubscriptionMonths,
+    tierFromMonthlyLdc,
+    validateMonthlyLdc,
+    type MonthlyLdcBounds,
+} from "@/lib/remnawave-subscription"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,14 +22,50 @@ interface RemnawaveProduct {
     description: string | null
 }
 
-export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProduct }) {
-    const [tier, setTier] = useState<RemnawaveTier>("LV0")
+interface RemnawaveSubscriptionFormProps {
+    product: RemnawaveProduct
+    bounds: MonthlyLdcBounds
+    tier1Threshold: number
+    tier2Threshold: number
+}
+
+export function RemnawaveSubscriptionForm({
+    product,
+    bounds,
+    tier1Threshold,
+    tier2Threshold,
+}: RemnawaveSubscriptionFormProps) {
+    const [monthlyLdcInput, setMonthlyLdcInput] = useState(String(bounds.default))
     const [monthsInput, setMonthsInput] = useState("1")
     const [submitting, setSubmitting] = useState(false)
 
     const months = normalizeSubscriptionMonths(Number(monthsInput))
-    const monthlyLdc = TIER_RATES[tier]
-    const total = useMemo(() => (months ? monthlyLdc * months : 0), [monthlyLdc, months])
+
+    const parsedMonthlyLdc = useMemo(() => {
+        const n = Number(monthlyLdcInput)
+        if (!Number.isFinite(n)) return null
+        return n
+    }, [monthlyLdcInput])
+
+    const monthlyLdcValid = parsedMonthlyLdc != null && validateMonthlyLdc(parsedMonthlyLdc, bounds)
+    const monthlyLdcForCompute = monthlyLdcValid ? (parsedMonthlyLdc as number) : 0
+    const tier = useMemo(
+        () => tierFromMonthlyLdc(monthlyLdcForCompute, tier1Threshold, tier2Threshold),
+        [monthlyLdcForCompute, tier1Threshold, tier2Threshold],
+    )
+
+    const total = useMemo(
+        () => (months && monthlyLdcValid ? monthlyLdcForCompute * months : 0),
+        [monthlyLdcForCompute, months, monthlyLdcValid],
+    )
+
+    const monthlyLdcErrorMessage = (() => {
+        if (parsedMonthlyLdc == null) return `Enter a number between ${bounds.min} and ${bounds.max}.`
+        if (!Number.isInteger(parsedMonthlyLdc)) return "Monthly LDC must be a whole number."
+        if (parsedMonthlyLdc < bounds.min) return `Monthly LDC must be at least ${bounds.min}.`
+        if (parsedMonthlyLdc > bounds.max) return `Monthly LDC must be at most ${bounds.max}.`
+        return null
+    })()
 
     const submitPaymentForm = (url: string, params: Record<string, unknown>) => {
         const form = document.createElement("form")
@@ -45,8 +87,12 @@ export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProdu
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!isRemnawaveTier(tier) || !months || monthlyLdc <= 0) {
-            toast.error("Select a valid tier and 1-12 months.")
+        if (!months) {
+            toast.error("Months must be an integer from 1 to 12.")
+            return
+        }
+        if (!monthlyLdcValid || parsedMonthlyLdc == null) {
+            toast.error(monthlyLdcErrorMessage || "Invalid monthly LDC amount.")
             return
         }
 
@@ -56,7 +102,7 @@ export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProdu
                 productId: product.id,
                 tier,
                 months,
-                monthlyLdc,
+                monthlyLdc: parsedMonthlyLdc,
             })
 
             if (!result?.success || !result.url || !result.params) {
@@ -71,6 +117,8 @@ export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProdu
             setSubmitting(false)
         }
     }
+
+    const canSubmit = !submitting && !!months && monthlyLdcValid && total > 0
 
     return (
         <main className="container py-8 md:py-16">
@@ -94,29 +142,37 @@ export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProdu
                 <Card className="h-fit border-border/35">
                     <CardHeader>
                         <CardTitle>Subscription</CardTitle>
-                        <CardDescription>Choose a tier and subscription length.</CardDescription>
+                        <CardDescription>Pick a monthly LDC amount and length.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="space-y-2">
-                                <Label htmlFor="remnawave-tier">Tier</Label>
-                                <select
-                                    id="remnawave-tier"
-                                    value={tier}
-                                    onChange={(event) => {
-                                        if (isRemnawaveTier(event.target.value)) {
-                                            setTier(event.target.value)
-                                        }
-                                    }}
+                                <div className="flex items-center justify-between gap-3">
+                                    <Label htmlFor="remnawave-monthly-ldc">Monthly LDC</Label>
+                                    <Badge variant="secondary" className="rounded-full text-[10px] font-medium">
+                                        Tier: {tier}
+                                    </Badge>
+                                </div>
+                                <Input
+                                    id="remnawave-monthly-ldc"
+                                    type="number"
+                                    inputMode="numeric"
+                                    min={bounds.min}
+                                    max={bounds.max}
+                                    step={1}
+                                    value={monthlyLdcInput}
+                                    onChange={(event) => setMonthlyLdcInput(event.target.value)}
                                     disabled={submitting}
-                                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    {Object.entries(TIER_RATES).map(([value, rate]) => (
-                                        <option key={value} value={value}>
-                                            {value} - {rate} LDC/month
-                                        </option>
-                                    ))}
-                                </select>
+                                    aria-invalid={!monthlyLdcValid}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Allowed range: {bounds.min} - {bounds.max} LDC/month.
+                                </p>
+                                {!monthlyLdcValid && monthlyLdcInput !== "" && monthlyLdcErrorMessage && (
+                                    <p className="text-xs text-red-600 dark:text-red-400">
+                                        {monthlyLdcErrorMessage}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -145,11 +201,11 @@ export function RemnawaveSubscriptionForm({ product }: { product: RemnawaveProdu
                                     <span className="text-sm font-medium text-muted-foreground">LDC</span>
                                 </div>
                                 <div className="mt-1 text-xs text-muted-foreground">
-                                    {monthlyLdc} LDC/month x {months || 0} month{months === 1 ? "" : "s"}
+                                    {monthlyLdcValid ? monthlyLdcForCompute : 0} LDC/month x {months || 0} month{months === 1 ? "" : "s"}
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={submitting || !months || total <= 0}>
+                            <Button type="submit" className="w-full" disabled={!canSubmit}>
                                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
                                 Pay {total} LDC via Linux DO Credit
                             </Button>

@@ -88,6 +88,7 @@ export default async function Home({
 
     return {
       ...p,
+      type: p.type ?? null,
       stockCount: stockTotal,
       soldCount: isGroup ? (p.totalSold || 0) : (p.sold || 0),
       isHot: isGroup ? (p.groupHot || false) : p.isHot,

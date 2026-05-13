@@ -13,6 +13,9 @@ This fork keeps non-secret configuration in `wrangler.jsonc` and stores sensitiv
 | `LV2_SQUAD_UUIDS` | var | Per-tier squad UUIDs (comma-separated). Empty tier = unpurchasable. Match the bot's `LV{N}_SQUAD_UUIDS` semantics. | `PLACEHOLDER_REPLACE_ME` | 2i |
 | `TIER1_THRESHOLD` | var | Bot tier configuration; keep aligned with fixture semantics. | `PLACEHOLDER_REPLACE_ME` | 2h |
 | `TIER2_THRESHOLD` | var | Bot tier configuration; keep aligned with fixture semantics. | `PLACEHOLDER_REPLACE_ME` | 2h |
+| `LDC_MIN_MONTHLY` | var | Bot's `.env.sample`; minimum LDC/month a user can pick on the buy form. | `100` | 2j |
+| `LDC_MAX_MONTHLY` | var | Bot's `.env.sample`; maximum LDC/month. | `10000` | 2j |
+| `LDC_DEFAULT_MONTHLY` | var | Bot's `.env.sample`; default value on first render. | `100` | 2j |
 | `OIDC_ISSUER_URL` | var | linux.do OIDC issuer. | `https://connect.linux.do` | 2h |
 | `OAUTH_CLIENT_ID` | var | linux.do OAuth client dashboard at `https://connect.linux.do/dash/sso`. | `PLACEHOLDER_REPLACE_ME` | 2h |
 | `MERCHANT_KEY` | secret | Linux DO Credit merchant dashboard; this is the merchant API secret/key. | `PLACEHOLDER_REPLACE_ME` | 2h |

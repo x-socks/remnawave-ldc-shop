@@ -7,7 +7,13 @@ import { orders } from "@/lib/db/schema"
 import { withOrderColumnFallback, getProduct } from "@/lib/db/queries"
 import { generateOrderId } from "@/lib/crypto"
 import { buildPaymentSubmitParams } from "@/actions/payment"
-import { TIER_RATES, isRemnawaveTier, normalizeSubscriptionMonths } from "@/lib/remnawave-subscription"
+import {
+    normalizeSubscriptionMonths,
+    resolveMonthlyLdcBounds,
+    validateMonthlyLdc,
+    tierFromMonthlyLdc,
+    parsePositiveInt,
+} from "@/lib/remnawave-subscription"
 
 interface CreateRemnawavePaymentInput {
     productId: string
@@ -29,25 +35,28 @@ export async function createRemnawavePaymentOrder(input: CreateRemnawavePaymentI
     }
 
     const productId = String(input.productId || "").trim()
-    const tier = String(input.tier || "").trim()
     const months = normalizeSubscriptionMonths(input.months)
     const monthlyLdc = Number(input.monthlyLdc)
+    const bounds = resolveMonthlyLdcBounds()
+    const tier1Threshold = parsePositiveInt(process.env.TIER1_THRESHOLD, 1000)
+    const tier2Threshold = parsePositiveInt(process.env.TIER2_THRESHOLD, 2000)
 
     if (!productId) {
         return { success: false, error: "Missing product." }
     }
-    if (!isRemnawaveTier(tier)) {
-        return { success: false, error: "Select a valid tier." }
-    }
     if (!months) {
         return { success: false, error: "Months must be an integer from 1 to 12." }
     }
-    if (!Number.isFinite(monthlyLdc) || !Number.isInteger(monthlyLdc) || monthlyLdc <= 0) {
-        return { success: false, error: "Monthly LDC must be a positive integer." }
+    if (!validateMonthlyLdc(monthlyLdc, bounds)) {
+        return {
+            success: false,
+            error: `Monthly LDC must be an integer between ${bounds.min} and ${bounds.max}.`,
+        }
     }
-    if (monthlyLdc !== TIER_RATES[tier]) {
-        return { success: false, error: "Tier price changed. Refresh and try again." }
-    }
+
+    // Server is authoritative for tier derivation. Ignore any tier sent by the
+    // client; recompute from monthlyLdc + thresholds.
+    const tier = tierFromMonthlyLdc(monthlyLdc, tier1Threshold, tier2Threshold)
 
     const product = await getProduct(productId, { isLoggedIn: true, trustLevel: 999 }).catch(() => null)
     if (!product || product.type !== "remnawave_subscription") {

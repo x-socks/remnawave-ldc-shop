@@ -23,6 +23,7 @@ interface Product {
     name: string
     description: string | null
     descriptionPlain?: string | null
+    type?: string | null
     price: string
     compareAtPrice?: string | null
     image: string | null
@@ -311,7 +312,10 @@ export function HomeContent({
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                        {pageItems.map((product, index) => (
+                        {pageItems.map((product, index) => {
+                            const isRemnawaveSubscription = product.type === "remnawave_subscription"
+                            const dimCard = !isRemnawaveSubscription && product.stockCount <= 0
+                            return (
                             <Link
                                 key={product.id}
                                 href={`/buy/${product.id}`}
@@ -319,7 +323,7 @@ export function HomeContent({
                                 aria-label={t("common.viewDetails")}
                                 className={cn(
                                     "group tech-card relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border border-border/35 bg-card/85 shadow-[0_20px_50px_-38px_rgba(15,23,42,0.28)] transition-all duration-300 animate-in fade-in slide-in-from-bottom-2 motion-reduce:animate-none",
-                                    product.stockCount <= 0 && "opacity-90"
+                                    dimCard && "opacity-90"
                                 )}
                                 style={{ animationDelay: `${index * 60}ms` }}
                             >
@@ -349,16 +353,22 @@ export function HomeContent({
                                         ) : (
                                             <span />
                                         )}
-                                        <Badge
-                                            className={cn(
-                                                "h-7 rounded-full border px-3 text-[10px] font-medium shadow-sm",
-                                                product.stockCount > 0
-                                                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                                                    : "border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-300"
-                                            )}
-                                        >
-                                            {product.stockCount > 0 ? t("common.inStock") : t("common.outOfStock")}
-                                        </Badge>
+                                        {isRemnawaveSubscription ? (
+                                            <Badge className="h-7 rounded-full border border-primary/20 bg-primary/10 px-3 text-[10px] font-medium text-primary shadow-sm">
+                                                {t("common.inStock")}
+                                            </Badge>
+                                        ) : (
+                                            <Badge
+                                                className={cn(
+                                                    "h-7 rounded-full border px-3 text-[10px] font-medium shadow-sm",
+                                                    product.stockCount > 0
+                                                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                                        : "border-rose-500/20 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                                                )}
+                                            >
+                                                {product.stockCount > 0 ? t("common.inStock") : t("common.outOfStock")}
+                                            </Badge>
+                                        )}
                                     </div>
                                     {product.isHot && (
                                         <Badge className="absolute bottom-3 left-3 h-7 rounded-full border-0 bg-orange-500 px-3 text-[10px] font-semibold text-white shadow-lg shadow-orange-500/20">
@@ -402,7 +412,11 @@ export function HomeContent({
                                         <div className="flex items-end justify-between gap-4">
                                             <div className="min-w-0">
                                                 <div className="flex flex-wrap items-baseline gap-2">
-                                                    {product.variantCount != null && product.variantCount > 1 && product.priceMin != null && product.priceMax != null ? (
+                                                    {isRemnawaveSubscription ? (
+                                                        <span className="whitespace-nowrap text-2xl font-semibold tracking-tight text-primary tabular-nums">
+                                                            {t("common.unlimited")}
+                                                        </span>
+                                                    ) : product.variantCount != null && product.variantCount > 1 && product.priceMin != null && product.priceMax != null ? (
                                                         <>
                                                             <span className="whitespace-nowrap text-2xl font-semibold tracking-tight text-primary tabular-nums">
                                                                 {product.priceMin} - {product.priceMax}
@@ -441,10 +455,16 @@ export function HomeContent({
                                                         </>
                                                     )}
                                                 </div>
-                                                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                                                    <span>{t("common.stock")}: {product.stockCount >= INFINITE_STOCK ? "∞" : product.stockCount}</span>
-                                                    <span>{t("common.sold")}: {product.soldCount}</span>
-                                                </div>
+                                                {isRemnawaveSubscription ? (
+                                                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                                                        <span>{t("common.sold")}: {product.soldCount}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                                                        <span>{t("common.stock")}: {product.stockCount >= INFINITE_STOCK ? "∞" : product.stockCount}</span>
+                                                        <span>{t("common.sold")}: {product.soldCount}</span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/40 bg-background/80 text-muted-foreground transition-transform duration-300 group-hover:border-primary/30 group-hover:text-primary group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
@@ -454,7 +474,8 @@ export function HomeContent({
                                     </div>
                                 </CardContent>
                             </Link>
-                        ))}
+                            )
+                        })}
                     </div>
                 )}
             </section>

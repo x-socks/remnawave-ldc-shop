@@ -71,6 +71,7 @@ export default async function SearchPage(props: {
           id: p.id,
           name: p.name,
           description: p.description,
+          type: p.type ?? null,
           price: p.price,
           compareAtPrice: p.compareAtPrice ?? null,
           image: p.image,
